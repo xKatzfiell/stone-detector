@@ -100,7 +100,7 @@ class YOLOWorker(QThread):
             
         last_stone_click = time.time()
         last_z_press = time.time()
-        z_interval = random.uniform(0, 5)  # 0-5 saniye arası
+        z_interval = random.uniform(0, 3)  # 0-3 saniye arası
         
         move_directions = ['w', 'a', 's', 'd']
         current_direction = 0
@@ -129,9 +129,17 @@ class YOLOWorker(QThread):
             # Metin taşı tespit edildiğinde ve tıklama aralığı geçtiyse tıkla
             if stone_position and (current_time - last_stone_click) >= self.click_interval:
                 center_x, center_y = stone_position
+                
+                # İmleci metin taşının üzerine getir
+                pyautogui.moveTo(center_x, center_y)
+                
+                # 0-1 saniye arasında rastgele bekle
+                wait_time = random.uniform(0, 1)
+                self.update_status.emit(f"İmleç metin taşının üzerinde, {wait_time:.1f} saniye bekleniyor...")
+                time.sleep(wait_time)
                     
                 # Taşa tıkla (tam ortasına)
-                pyautogui.click(center_x, center_y)
+                pyautogui.click()
                 self.update_status.emit(f"Metin taşı tespit edildi! Tam ortasına tıklandı: ({center_x}, {center_y}) - {self.click_interval} saniye sonra tekrar tıklanacak")
                 self.stone_detected.emit((center_x, center_y))
                 last_stone_click = current_time
@@ -177,7 +185,7 @@ class YOLOWorker(QThread):
 class MetinBotGUI(QMainWindow):
     def __init__(self):
         super().__init__()
-        self.setWindowTitle("Metin2 YOLOv8 Otomatik Bot")
+        self.setWindowTitle("Metin2 Stone Detector - Katz")
         self.setMinimumSize(1000, 700)
         
         # Config dosya yolu
