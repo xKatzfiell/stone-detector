@@ -118,7 +118,7 @@ class YOLOWorker(QThread):
             frame = np.array(screenshot)
             frame = cv2.cvtColor(frame, cv2.COLOR_RGB2BGR)
             
-            # Metin taşlarını tespit et
+            # Taşları tespit et
             annotated_frame, stone_position = self.detect_stones(frame)
             
             # Tespiti ekrana göster
@@ -126,28 +126,28 @@ class YOLOWorker(QThread):
             
             current_time = time.time()
             
-            # Metin taşı tespit edildiğinde ve tıklama aralığı geçtiyse tıkla
+            # Taş tespit edildiğinde ve tıklama aralığı geçtiyse tıkla
             if stone_position and (current_time - last_stone_click) >= self.click_interval:
                 center_x, center_y = stone_position
                 
-                # İmleci metin taşının üzerine getir
+                # İmleci taşın üzerine getir
                 pyautogui.moveTo(center_x, center_y)
                 
                 # 0-1 saniye arasında rastgele bekle
                 wait_time = random.uniform(0, 1)
-                self.update_status.emit(f"İmleç metin taşının üzerinde, {wait_time:.1f} saniye bekleniyor...")
+                self.update_status.emit(f"İmleç taşınn üzerinde, {wait_time:.1f} saniye bekleniyor...")
                 time.sleep(wait_time)
                     
                 # Taşa tıkla (tam ortasına)
                 pyautogui.click()
-                self.update_status.emit(f"Metin taşı tespit edildi! Tam ortasına tıklandı: ({center_x}, {center_y}) - {self.click_interval} saniye sonra tekrar tıklanacak")
+                self.update_status.emit(f"Taş tespit edildi! Tam ortasına tıklandı: ({center_x}, {center_y}) - {self.click_interval} saniye sonra tekrar tıklanacak")
                 self.stone_detected.emit((center_x, center_y))
                 last_stone_click = current_time
             
-            # Metin taşı tespit edildiğinde ama tıklama aralığı geçmediyse bekle
+            # Taş tespit edildiğinde ama tıklama aralığı geçmediyse bekle
             elif stone_position:
                 remaining = self.click_interval - (current_time - last_stone_click)
-                self.update_status.emit(f"Metin taşı tespit edildi! Tıklamaya kalan süre: {remaining:.1f} saniye")
+                self.update_status.emit(f"Taş tespit edildi! Tıklamaya kalan süre: {remaining:.1f} saniye")
                 time.sleep(0.2)  # CPU yükünü azaltmak için kısa bekleme
                 
             # Taş bulunamadığında hareket et
@@ -169,7 +169,7 @@ class YOLOWorker(QThread):
                     keyboard.release(scan_key)
                 
                 move_count += 1
-                self.update_status.emit(f"Metin taşı aranıyor... ({move_directions[current_direction]} tuşu ile hareket)")
+                self.update_status.emit(f"Taş aranıyor... ({move_directions[current_direction]} tuşu ile hareket)")
             
             # Rastgele Z tuşuna basma
             if current_time - last_z_press > z_interval:
@@ -182,10 +182,10 @@ class YOLOWorker(QThread):
             
             time.sleep(0.05)  # CPU kullanımını azaltmak için kısa bekleme
 
-class MetinBotGUI(QMainWindow):
+class StoneBotGUI(QMainWindow):
     def __init__(self):
         super().__init__()
-        self.setWindowTitle("Metin2 Stone Detector - Katz")
+        self.setWindowTitle("Stone Detector - Katz")
         self.setMinimumSize(1000, 700)
         
         # Config dosya yolu
@@ -510,7 +510,7 @@ class MetinBotGUI(QMainWindow):
         
     def stone_detected(self, pos):
         x, y = pos
-        self.status_bar.showMessage(f"Metin taşı tespit edildi! Konumu: ({x}, {y})")
+        self.status_bar.showMessage(f"Taş tespit edildi! Konumu: ({x}, {y})")
 
     def browse_model(self):
         file_path, _ = QFileDialog.getOpenFileName(self, "YOLOv8 Model Seç", "", "PT Files (*.pt)")
@@ -628,6 +628,6 @@ class MetinBotGUI(QMainWindow):
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)
-    window = MetinBotGUI()
+    window = StoneBotGUI()
     window.show()
     sys.exit(app.exec_())
