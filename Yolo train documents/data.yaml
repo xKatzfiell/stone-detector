@@ -3,4 +3,4 @@ val: ../val/images
 test: ../test/images
 
 nc: 1
-names: ['rock']
+names: ['stone']

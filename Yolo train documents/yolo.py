@@ -6,7 +6,7 @@ if __name__ == '__main__':
 
     # Veri artırma seçenekleriyle eğitim
     results = model.train(
-        data='C:/Users/Katzfiell/Desktop/metin_tasi/data.yaml',
+        data='C:/Users/Katzfiell/Desktop/stone/data.yaml',
         epochs=300,        # Daha fazla epoch
         imgsz=640,
         patience=300,       # Sabırlı olun
